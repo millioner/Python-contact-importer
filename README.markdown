@@ -18,7 +18,7 @@ those keys here:
 https://www.google.com/accounts/ManageDomains
 
 ### Yahoo!:
-Also "consumer_key" and "consumer_secret" keys needed:
+Also "consumer_key" and "consumer_secret" keys needed.
 App creating link:
 https://developer.apps.yahoo.com/dashboard/createKey.html
 
