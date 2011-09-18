@@ -1,9 +1,12 @@
 Python contact importer
 =======================
 
+Allows to export user contacts from Google, Yahoo! and Hotmail.
+Uses OAuth protocol for working with Google and Yahoo!. And Microsoft's "Delegated authentification" for Hotmail.
+
 **Requires:**
-* python-oauth2 (https://github.com/simplegeo/python-oauth2)
-* PyCrypto
+ * python-oauth2 (https://github.com/simplegeo/python-oauth2)
+ * PyCrypto
 
 
 ### Google contact export:
