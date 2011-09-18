@@ -2,8 +2,8 @@ Python contact importer
 =======================
 
 **Requires:**
-    * python-oauth2 (https://github.com/simplegeo/python-oauth2)
-    * PyCrypto
+* python-oauth2 (https://github.com/simplegeo/python-oauth2)
+* PyCrypto
 
 
 ### Google contact export:
