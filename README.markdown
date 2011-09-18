@@ -2,8 +2,8 @@ Python contact importer
 =======================
 
 **Requires:**
-    - python-oauth2 (https://github.com/simplegeo/python-oauth2)
-    - PyCrypto
+    * python-oauth2 (https://github.com/simplegeo/python-oauth2)
+    * PyCrypto
 
 
 ### Google contact export:
@@ -25,7 +25,7 @@ http://msdn.microsoft.com/en-us/library/cc287659.aspx
 Application creating - https://manage.dev.live.com/Applications/Index
 
 
-### Settings example (works at the dev.yesyous.com domain)::
+### Settings example::
 
     CONTACT_IMPORT_SETTINGS = {
         'google': { 'consumer_key': 'example.com', 'consumer_secret': 'bYG3xo_b-4cP7Yre1leF9Qsn' },
@@ -40,7 +40,7 @@ Application creating - https://manage.dev.live.com/Applications/Index
         }
     }
 
-#### Usage (with Django):
+# Usage (with Django):
 
 urls.py::
 
@@ -83,4 +83,4 @@ contact_list.html::
         </ul>
     {% endblock %}
 
-# That's it! More detail docs will be here soon.
+#### That's it! More detail docs will be here soon.
