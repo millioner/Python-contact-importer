@@ -11,7 +11,7 @@ setup(name='python-contact-importer',
     packages=['contact_importer', ],
     include_package_data = True,    # include everything in source control
     zip_safe=False,
-    install_requires=['PyCrypto', 'git+git://github.com/simplegeo/python-oauth2.git', ],
+    install_requires=['PyCrypto', 'oauth2', ],
     classifiers = [
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",
