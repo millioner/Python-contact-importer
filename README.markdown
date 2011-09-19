@@ -29,7 +29,7 @@ http://msdn.microsoft.com/en-us/library/cc287659.aspx
 Application creating - https://manage.dev.live.com/Applications/Index
 
 
-### Settings example::
+### Settings example:
 
     CONTACT_IMPORT_SETTINGS = {
         'google': { 'consumer_key': 'example.com', 'consumer_secret': 'bYG3xo_b-4cP7Yre1leF9Qsn' },
@@ -46,7 +46,7 @@ Application creating - https://manage.dev.live.com/Applications/Index
 
 # Usage (with Django):
 
-urls.py::
+urls.py:
 
     # ...
     urlpatterns = patterns('',
@@ -56,7 +56,7 @@ urls.py::
     )
 
 
-views.py::
+views.py:
 
     from django.views.decorators.csrf import csrf_exempt
     from django.shortcuts import render_to_response
@@ -75,7 +75,7 @@ views.py::
         }, context_instance=RequestContext(request))
 
 
-contact_list.html::
+contact_list.html:
 
     {% extends "base.html" %}
 
@@ -86,5 +86,18 @@ contact_list.html::
             {% endfor %}
         </ul>
     {% endblock %}
+
+
+## Important!
+Each your request to import_contacts should has a GET param "service"
+
+For example if you want to get contacts from Google your request should be http://example.com/import_contacts?service=google
+
+For Yahoo!: http://example.com/import_contacts?service=yahoo
+
+And Hotmail: http://example.com/import_contacts?service=hotmail
+
+First of all user will be redirected to the contact provider page, after approving he will be back to the site and his
+contacts will be imported.
 
 #### That's it! More detail docs will be here soon.
