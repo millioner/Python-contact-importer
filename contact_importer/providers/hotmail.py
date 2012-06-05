@@ -27,10 +27,11 @@ class HotmailContacts(BaseContacts):
         """
         Does nothing. Added only for
         """
+        self.return_url = args[0]
         return {}
 
     def get_auth_url(self):
-        wll = WindowsLiveLogin(appid=self.consumer_key, secret=self.consumer_secret, policyurl=self.policy_url)
+        wll = WindowsLiveLogin(appid=self.consumer_key, secret=self.consumer_secret, policyurl=self.policy_url, returnurl=self.return_url)
         return wll.getConsentUrl("Contacts.View")
 
     def get_contacts(self):
