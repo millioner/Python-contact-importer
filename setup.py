@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='python-contact-importer',
     version='0.1',
@@ -8,7 +8,7 @@ setup(name='python-contact-importer',
     author='Millioner',
     author_email='millioner.bbb@gmail.com',
     url='https://github.com/millioner/Python-contact-importer',
-    packages=['contact_importer', ],
+    packages=find_packages(),
     include_package_data = True,    # include everything in source control
     zip_safe=False,
     install_requires=['PyCrypto', 'oauth2', ],
