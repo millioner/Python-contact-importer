@@ -6,6 +6,7 @@ import oauth2 as oauth
 
 from .base import BaseContacts
 
+
 class OAuthContacts(BaseContacts):
     """
     Abstract class for contact importing via OAuth protocol.
@@ -19,7 +20,7 @@ class OAuthContacts(BaseContacts):
 
     scope_urls = []
 
-    def __init__(self, consumer_key, consumer_secret,  *args, **kwargs):
+    def __init__(self, consumer_key, consumer_secret, *args, **kwargs):
         """
         Init function
         Keyword params:
@@ -38,7 +39,7 @@ class OAuthContacts(BaseContacts):
         super(OAuthContacts, self).__init__(*args, **kwargs)
 
     def get_params(self, oauth_callback):
-        params = { 'oauth_callback': oauth_callback}
+        params = {'oauth_callback': oauth_callback}
         if self.scope_urls:
             params['scope'] = ' '.join(self.scope_urls)
         return urllib.urlencode(params)
@@ -52,8 +53,8 @@ class OAuthContacts(BaseContacts):
         client = oauth.Client(self.consumer)
 
         resp, content = client.request(
-            "%s?%s" % (self.request_token_url, self.get_params(oauth_callback)),
-            method="GET"
+            "%s?%s" % (self.request_token_url, self.get_params(oauth_callback)), method="GET",
+            body=self.get_params(oauth_callback)
         )
         if resp['status'] != '200':
             raise Exception("Invalid response %s." % resp['status'])
@@ -62,7 +63,7 @@ class OAuthContacts(BaseContacts):
         self.oauth_token = token.get('oauth_token')
         self.oauth_token_secret = token.get('oauth_token_secret')
 
-        return { 'oauth_token': self.oauth_token, 'oauth_token_secret': self.oauth_token_secret }
+        return {'oauth_token': self.oauth_token, 'oauth_token_secret': self.oauth_token_secret}
 
     def get_auth_url(self):
         """
@@ -90,4 +91,3 @@ class OAuthContacts(BaseContacts):
     def get_contacts(self):
         if not hasattr(self, 'access_token') or not hasattr(self, 'access_token_secret'):
             self.receive_access_tokens()
-
