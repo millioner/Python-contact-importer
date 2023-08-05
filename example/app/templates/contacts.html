@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Contacts</h1>
+  <div class="col-lg-8 px-0">
+    <ul>
+        {% for contact in contacts %}
+            <li>{{ contact.name }} - {{ contact.emails }}</li>
+        {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

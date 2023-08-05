@@ -1,16 +1,16 @@
-###-*- coding: utf-8 -*-#################################
-import urlparse
 import urllib
 
 import oauth2 as oauth
 
 from .base import BaseContacts
 
+
 class OAuthContacts(BaseContacts):
     """
     Abstract class for contact importing via OAuth protocol.
     General information about OAuth can be readed here http://hueniverse.com/oauth/guide/
     """
+
     request_token_url = None
     access_token_url = None
     authorize_url = None
@@ -19,7 +19,7 @@ class OAuthContacts(BaseContacts):
 
     scope_urls = []
 
-    def __init__(self, consumer_key, consumer_secret,  *args, **kwargs):
+    def __init__(self, consumer_key, consumer_secret, *args, **kwargs):
         """
         Init function
         Keyword params:
@@ -38,9 +38,9 @@ class OAuthContacts(BaseContacts):
         super(OAuthContacts, self).__init__(*args, **kwargs)
 
     def get_params(self, oauth_callback):
-        params = { 'oauth_callback': oauth_callback}
+        params = {"oauth_callback": oauth_callback}
         if self.scope_urls:
-            params['scope'] = ' '.join(self.scope_urls)
+            params["scope"] = " ".join(self.scope_urls)
         return urllib.urlencode(params)
 
     def get_tokens(self, oauth_callback):
@@ -53,16 +53,19 @@ class OAuthContacts(BaseContacts):
 
         resp, content = client.request(
             "%s?%s" % (self.request_token_url, self.get_params(oauth_callback)),
-            method="GET"
+            method="GET",
         )
-        if resp['status'] != '200':
-            raise Exception("Invalid response %s." % resp['status'])
+        if resp["status"] != "200":
+            raise Exception("Invalid response %s." % resp["status"])
 
-        token = dict(urlparse.parse_qsl(content))
-        self.oauth_token = token.get('oauth_token')
-        self.oauth_token_secret = token.get('oauth_token_secret')
+        token = dict(urllib.parse.parse_qsl(content))
+        self.oauth_token = token.get("oauth_token")
+        self.oauth_token_secret = token.get("oauth_token_secret")
 
-        return { 'oauth_token': self.oauth_token, 'oauth_token_secret': self.oauth_token_secret }
+        return {
+            "oauth_token": self.oauth_token,
+            "oauth_token_secret": self.oauth_token_secret,
+        }
 
     def get_auth_url(self):
         """
@@ -72,7 +75,9 @@ class OAuthContacts(BaseContacts):
         if self.oauth_token:
             return "%s?oauth_token=%s" % (self.authorize_url, self.oauth_token)
         else:
-            raise AttributeError('Request token is missing. Auth url cannot be generated.')
+            raise AttributeError(
+                "Request token is missing. Auth url cannot be generated."
+            )
 
     def receive_access_tokens(self):
         """
@@ -83,11 +88,12 @@ class OAuthContacts(BaseContacts):
         token.set_verifier(self.oauth_verifier)
         client = oauth.Client(self.consumer, token)
         resp, content = client.request(self.access_token_url, "GET")
-        res_token = dict(urlparse.parse_qsl(content))
-        self.access_token = res_token.get('oauth_token')
-        self.access_token_secret = res_token.get('oauth_token_secret')
+        res_token = dict(urllib.parse.parse_qsl(content))
+        self.access_token = res_token.get("oauth_token")
+        self.access_token_secret = res_token.get("oauth_token_secret")
 
     def get_contacts(self):
-        if not hasattr(self, 'access_token') or not hasattr(self, 'access_token_secret'):
+        if not hasattr(self, "access_token") or not hasattr(
+            self, "access_token_secret"
+        ):
             self.receive_access_tokens()
-

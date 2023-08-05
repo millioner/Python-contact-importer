@@ -1,12 +1,12 @@
-###-*- coding: utf-8 -*-#################################
-import urllib, urllib2
+import urllib.request
+import urllib.parse
 import xml.dom.minidom
 
 from ..lib.WindowsLiveLogin import WindowsLiveLogin
 from .base import BaseContacts
 
-class HotmailContacts(BaseContacts):
 
+class HotmailContacts(BaseContacts):
     def __init__(self, consumer_key, consumer_secret, policy_url, *args, **kwargs):
         """
         Initial function,
@@ -31,30 +31,44 @@ class HotmailContacts(BaseContacts):
         return {}
 
     def get_auth_url(self):
-        wll = WindowsLiveLogin(appid=self.consumer_key, secret=self.consumer_secret, policyurl=self.policy_url, returnurl=self.return_url)
+        wll = WindowsLiveLogin(
+            appid=self.consumer_key,
+            secret=self.consumer_secret,
+            policyurl=self.policy_url,
+            returnurl=self.return_url,
+        )
         return wll.getConsentUrl("Contacts.View")
 
     def get_contacts(self):
         """
         Implements a generator for iterating in contacts
         """
-        wll = WindowsLiveLogin(appid=self.consumer_key, secret=self.consumer_secret, policyurl=self.policy_url)
+        wll = WindowsLiveLogin(
+            appid=self.consumer_key,
+            secret=self.consumer_secret,
+            policyurl=self.policy_url,
+        )
 
         consent_token = wll.processConsent(self.post_params)
 
         if not consent_token or not consent_token.isValid():
-            raise Exception('Cannot give a contact list.')
+            raise Exception("Cannot give a contact list.")
 
         lid = consent_token.getLocationID()
         lid16 = int(lid, 16)
         to_signed_64 = lambda x: x < 2**63 and x or x - 2**64
         lid_s64 = to_signed_64(lid16)
-        url = 'https://livecontacts.services.live.com/users/@C@%s/rest/invitationsbyemail' % lid_s64
-        req = urllib2.Request(url)
-        req.add_header(
-            'Authorization', 'DelegatedToken dt="%s"' % urllib.unquote(consent_token.getDelegationToken())
+        url = (
+            "https://livecontacts.services.live.com/users/@C@%s/rest/invitationsbyemail"
+            % lid_s64
         )
-        response = urllib2.build_opener().open(req)
+        req = urllib.request.Request(url)
+        req.add_header(
+            "Authorization",
+            'DelegatedToken dt="%s"'
+            % urllib.parse.unquote(consent_token.getDelegationToken()),
+        )
+        response = urllib.request.build_opener().open(req)
         return self.parse_contacts(response.read())
 
     def parse_contacts(self, xml_string):
@@ -69,17 +83,25 @@ class HotmailContacts(BaseContacts):
 
                 name = []
                 try:
-                    name.append(contact.getElementsByTagName("FirstName")[0].childNodes[0].data)
+                    name.append(
+                        contact.getElementsByTagName("FirstName")[0].childNodes[0].data
+                    )
                 except Exception:
                     pass
 
                 try:
-                    name.append(contact.getElementsByTagName("LastName")[0].childNodes[0].data)
+                    name.append(
+                        contact.getElementsByTagName("LastName")[0].childNodes[0].data
+                    )
                 except Exception:
                     pass
 
-                contacts.append({
-                    'name': ' '.join(name),
-                    'emails': [email[0].childNodes[0].data, ]
-                })
+                contacts.append(
+                    {
+                        "name": " ".join(name),
+                        "emails": [
+                            email[0].childNodes[0].data,
+                        ],
+                    }
+                )
         return contacts

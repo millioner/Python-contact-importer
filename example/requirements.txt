@@ -1,0 +1,16 @@
+asgiref==3.7.2
+certifi==2023.7.22
+charset-normalizer==3.2.0
+crypto==1.4.1
+Django==4.2.4
+httplib2==0.22.0
+idna==3.4
+Naked==0.1.32
+oauth2==1.9.0.post1
+pyparsing==3.1.1
+PyYAML==6.0.1
+requests==2.31.0
+shellescape==3.8.1
+sqlparse==0.4.4
+typing_extensions==4.7.1
+urllib3==2.0.4

@@ -1,4 +1,3 @@
-###-*- coding: utf-8 -*-#################################
 class BaseContacts(object):
     """
     Abstract class for contact importing
@@ -7,8 +6,9 @@ class BaseContacts(object):
     def __init__(self, *args, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
-#        self.is_success = False
-#        self.error_message = None
+
+    #        self.is_success = False
+    #        self.error_message = None
 
     def get_contacts(self):
         """

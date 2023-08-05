@@ -5,7 +5,7 @@
 
 *~
 example/static/*
-example/db
+example/db.sqlite3
 
 #local settings
 local_settings.py
@@ -19,8 +19,14 @@ local_settings.py
 src/.idea/
 .idea/
 
+#VS Code's specific
+.vscode/
+
 #egg's specific
 *.egg-info
 
 #defaults
 *.pyc
+
+#virtualenv
+.venv
