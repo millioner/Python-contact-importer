@@ -24,7 +24,8 @@ import cgi
 import sys
 import re
 
-class WLLError(Exception): # pragma: no cover
+
+class WLLError(Exception):  # pragma: no cover
 
     """All fatal errors in this class will throw this exception."""
 
@@ -34,12 +35,24 @@ class WLLError(Exception): # pragma: no cover
     def __str__(self):
         return repr(self.value)
 
-class ConsentToken : # pragma: no cover
 
-    """Holds the Consent Token object corresponding to consent granted. """
+class ConsentToken:  # pragma: no cover
 
-    def __init__(self, wll, delegationToken, refreshToken, sessionKey, expiry,
-                   offers, locationID, context, decodedToken, token ):
+    """Holds the Consent Token object corresponding to consent granted."""
+
+    def __init__(
+        self,
+        wll,
+        delegationToken,
+        refreshToken,
+        sessionKey,
+        expiry,
+        offers,
+        locationID,
+        context,
+        decodedToken,
+        token,
+    ):
         """Initialize the ConsentToken module with the WindowsLiveLogin,
         delegation token, refresh token, session key, expiry, offers,
         location ID, context, decoded token, and raw token.
@@ -91,10 +104,14 @@ class ConsentToken : # pragma: no cover
         try:
             expirytime = int(expiry)
             if expirytime <= 0:
-                raise WLLError("Error: setExpiry: Invalid expiry time (<=0): %s" % expiry)
+                raise WLLError(
+                    "Error: setExpiry: Invalid expiry time (<=0): %s" % expiry
+                )
             self.__expiry = expirytime
-        except BaseException, e:
-            raise WLLError("Error: setExpiry: Invalid expiry time %s : %s" % (expiry, e))
+        except BaseException as e:
+            raise WLLError(
+                "Error: setExpiry: Invalid expiry time %s : %s" % (expiry, e)
+            )
 
     def getExpiry(self):
         """Gets the expiry time of delegation token."""
@@ -104,17 +121,17 @@ class ConsentToken : # pragma: no cover
         """Sets the offers/actions for which user granted consent."""
         if not offers:
             raise WLLError("Error: ConsentToken: Null offers.")
-        offers = urllib.unquote(offers)
+        offers = urllib.parse.unquote(offers)
 
         offer_s = ""
         offers_a = {}
         counter = 0
-        pairs = offers.split(';')
+        pairs = offers.split(";")
         for pair in pairs:
             if pair.find(":") >= 0:
-                k, v = pair.split(':')
+                k, v = pair.split(":")
                 if offer_s:
-                    offer_s = offer_s + ','
+                    offer_s = offer_s + ","
                 offer_s = offer_s + k
                 offers_a[counter] = k
                 counter = counter + 1
@@ -174,7 +191,7 @@ class ConsentToken : # pragma: no cover
         expiry = self.getExpiry()
         return (now - 300) < expiry
 
-    def refresh (self):
+    def refresh(self):
         """Refreshes the current token and replace it. If operation succeeds
         true (1) is returned to signify success."""
         ct = self.__wll.refreshConsentToken(self)
@@ -197,7 +214,7 @@ class ConsentToken : # pragma: no cover
         self.__token = ct.__token
 
 
-class User: # pragma: no cover
+class User:  # pragma: no cover
 
     """Holds the user information after a successful sign-in."""
 
@@ -236,7 +253,7 @@ class User: # pragma: no cover
         if not userid:
             raise WLLError("Error: User: Null id in token.")
 
-        m = re.match(r'^\w+$', userid)
+        m = re.match(r"^\w+$", userid)
         if not m:
             raise WLLError("Error: User: Invalid id: %s" % userid)
 
@@ -253,7 +270,7 @@ class User: # pragma: no cover
         if flags:
             try:
                 flags = int(flags)
-                self.__usePersistentCookie = ((flags %2) == 1)
+                self.__usePersistentCookie = (flags % 2) == 1
             except:
                 raise WLLError("Error: User: Invalid flags: %s" % flags)
 
@@ -278,8 +295,8 @@ class User: # pragma: no cover
         """Sets the raw User token."""
         self.__token = token
 
-class WindowsLiveLogin: # pragma: no cover
 
+class WindowsLiveLogin:  # pragma: no cover
     ###################################################################
     # Implementation of the basic methods needed to perform
     # Web Authentication and Delegated Authentication.
@@ -312,7 +329,15 @@ class WindowsLiveLogin: # pragma: no cover
         self.debug(error)
         raise WLLError(error)
 
-    def __init__(self, appid=None, secret=None, securityalgorithm=None, force_delauth_nonprovisioned=False, policyurl=None, returnurl=None):
+    def __init__(
+        self,
+        appid=None,
+        secret=None,
+        securityalgorithm=None,
+        force_delauth_nonprovisioned=False,
+        policyurl=None,
+        returnurl=None,
+    ):
         """# Initialize the WindowsLiveLogin module with the application ID,
         secret key, and security algorithm.
 
@@ -361,7 +386,6 @@ class WindowsLiveLogin: # pragma: no cover
         if returnurl:
             self.setReturnUrl(returnurl)
 
-
     @staticmethod
     def initFromXml(settingsFile):
         """Initialize the WindowsLiveLogin module from a settings file.
@@ -388,31 +412,33 @@ class WindowsLiveLogin: # pragma: no cover
         settings = o.parseSettings(settingsFile)
 
         o.force_delauth_nonprovisioned = False
-        if 'force_delauth_nonprovisioned' in settings:
-            o.__force_delauth_nonprovisioned  = (settings['force_delauth_nonprovisioned'].lower() == 'true')
+        if "force_delauth_nonprovisioned" in settings:
+            o.__force_delauth_nonprovisioned = (
+                settings["force_delauth_nonprovisioned"].lower() == "true"
+            )
 
-        if 'appid' in settings:
-            o.setAppId(settings['appid'])
-        if 'secret' in settings:
-            o.setSecret(settings['secret'])
-        if 'securityalgorithm' in settings:
-            o.setSecurityAlgorithm(settings['securityalgorithm'])
-        if 'baseurl' in settings:
-            o.setBaseUrl(settings['baseurl'])
-        if 'secureurl' in settings:
-            o.setSecureUrl(settings['secureurl'])
-        if 'debug' in settings:
-            o.setDebug(settings['debug'])
-        if 'oldsecret' in settings:
-            o.setOldSecret(settings['oldsecret'])
-        if 'oldsecretexpiry' in settings:
-            o.setOldSecretExpiry(settings['oldsecretexpiry'])
-        if 'policyurl' in settings:
-            o.setPolicyUrl(settings['policyurl'])
-        if 'returnurl' in settings:
-            o.setReturnUrl(settings['returnurl'])
-        if 'consenturl' in settings:
-            o.setConsentBaseUrl(settings['consenturl'])
+        if "appid" in settings:
+            o.setAppId(settings["appid"])
+        if "secret" in settings:
+            o.setSecret(settings["secret"])
+        if "securityalgorithm" in settings:
+            o.setSecurityAlgorithm(settings["securityalgorithm"])
+        if "baseurl" in settings:
+            o.setBaseUrl(settings["baseurl"])
+        if "secureurl" in settings:
+            o.setSecureUrl(settings["secureurl"])
+        if "debug" in settings:
+            o.setDebug(settings["debug"])
+        if "oldsecret" in settings:
+            o.setOldSecret(settings["oldsecret"])
+        if "oldsecretexpiry" in settings:
+            o.setOldSecretExpiry(settings["oldsecretexpiry"])
+        if "policyurl" in settings:
+            o.setPolicyUrl(settings["policyurl"])
+        if "returnurl" in settings:
+            o.setReturnUrl(settings["returnurl"])
+        if "consenturl" in settings:
+            o.setConsentBaseUrl(settings["consenturl"])
         return o
 
     def setAppId(self, appid):
@@ -423,9 +449,10 @@ class WindowsLiveLogin: # pragma: no cover
                 return
             self.fatal("Error: setAppId: Null application ID.")
 
-        if not re.match(r'^\w+$', appid):
-            self.fatal("Error: setAppId: Application ID must be alpha-numeric: %s" %
-                       appid)
+        if not re.match(r"^\w+$", appid):
+            self.fatal(
+                "Error: setAppId: Application ID must be alpha-numeric: %s" % appid
+            )
 
         self.__appid = appid
 
@@ -482,10 +509,14 @@ class WindowsLiveLogin: # pragma: no cover
         try:
             timestamp = int(timestamp)
             if timestamp <= 0:
-                raise WLLError("Error: setOldSecretExpiry: Invalid timestamp: %s" % timestamp)
+                raise WLLError(
+                    "Error: setOldSecretExpiry: Invalid timestamp: %s" % timestamp
+                )
             self.__oldsecretexpiry = timestamp
         except:
-            raise WLLError("Error: setOldSecretExpiry: Invalid timestamp: %s" % timestamp)
+            raise WLLError(
+                "Error: setOldSecretExpiry: Invalid timestamp: %s" % timestamp
+            )
 
     def getOldSecretExpiry(self):
         """Gets the old secret key expiry time."""
@@ -514,9 +545,13 @@ class WindowsLiveLogin: # pragma: no cover
     def getPolicyUrl(self):
         """Gets the privacy policy URL for your site."""
         if not self.__policyurl:
-            self.debug("Warning: In the initial release of Del Auth, a Policy URL must be configured in the SDK for both provisioned and non-provisioned scenarios.")
+            self.debug(
+                "Warning: In the initial release of Del Auth, a Policy URL must be configured in the SDK for both provisioned and non-provisioned scenarios."
+            )
             if self.__force_delauth_nonprovisioned:
-                self.fatal("Error: getPolicyUrl: Policy URL must be set in a Del Auth non-provisioned scenario. Aborting.")
+                self.fatal(
+                    "Error: getPolicyUrl: Policy URL must be set in a Del Auth non-provisioned scenario. Aborting."
+                )
         return self.__policyurl
 
     def setReturnUrl(self, returnurl):
@@ -536,9 +571,10 @@ class WindowsLiveLogin: # pragma: no cover
         """Returns the return URL of your site."""
         if not self.__returnurl:
             if self.__force_delauth_nonprovisioned:
-                self.fatal("Error: getReturnUrl: Return URL must be set in a Del Auth non-provisioned scenario. Aborting.")
+                self.fatal(
+                    "Error: getReturnUrl: Return URL must be set in a Del Auth non-provisioned scenario. Aborting."
+                )
         return self.__returnurl
-
 
     def setBaseUrl(self, baseurl):
         """Sets the base URL to use for the Windows Live Login server.
@@ -588,7 +624,6 @@ class WindowsLiveLogin: # pragma: no cover
             return "https://consent.live.com/"
         return self.__consenturl
 
-
     def processLogin(self, fs):
         """Processes the sign-in response from the Windows Live Login server.
 
@@ -602,20 +637,20 @@ class WindowsLiveLogin: # pragma: no cover
             self.debug("Error: processLogin: Query was null.")
             return
 
-        if not 'action' in fs:
+        if not "action" in fs:
             self.debug("Warning: processLogin: No action in query.")
             return
 
-        action = fs['action']
-        if action != 'login':
+        action = fs["action"]
+        if action != "login":
             self.debug("Warning: processLogin: fs action ignored: %s." % action)
             return
 
         token = None
         context = None
-        if 'stoken' in fs:
+        if "stoken" in fs:
             token = fs["stoken"]
-        if 'appctx' in fs:
+        if "appctx" in fs:
             context = fs["appctx"]
             context = urllib.unquote(context)
 
@@ -653,43 +688,49 @@ class WindowsLiveLogin: # pragma: no cover
         as the context field in the User object.
         """
         if not token:
-            self.debug('Error: processToken: Invalid token specified.')
+            self.debug("Error: processToken: Invalid token specified.")
             return
 
-        decodedToken = self.decodeAndValidateToken (token)
+        decodedToken = self.decodeAndValidateToken(token)
         if not decodedToken:
             self.debug("Error: processToken: Failed to decode/validate token: " + token)
             return
 
         decodedToken = self.parse(decodedToken)
         if not decodedToken:
-            self.debug("Error: processToken: Failed to parse token after decoding: " + token)
+            self.debug(
+                "Error: processToken: Failed to parse token after decoding: " + token
+            )
             return
 
-        if not 'appid' in decodedToken:
+        if not "appid" in decodedToken:
             self.debug("Error: processToken: token does not contain application ID.")
             return
-        sappid = decodedToken['appid']
+        sappid = decodedToken["appid"]
         appid = self.getAppId()
         if sappid != appid:
-            self.debug("Error: processToken: Application ID in token (%s) did not match application ID in configuration (%s)." %
-                       (sappid, appid))
+            self.debug(
+                "Error: processToken: Application ID in token (%s) did not match application ID in configuration (%s)."
+                % (sappid, appid)
+            )
             return
 
         timestamp = None
-        if 'ts' in decodedToken:
-            timestamp = decodedToken['ts']
+        if "ts" in decodedToken:
+            timestamp = decodedToken["ts"]
         userid = None
-        if 'uid' in decodedToken:
-            userid = decodedToken['uid']
+        if "uid" in decodedToken:
+            userid = decodedToken["uid"]
         flags = None
-        if 'flags' in decodedToken:
-            flags = decodedToken['flags']
+        if "flags" in decodedToken:
+            flags = decodedToken["flags"]
 
         try:
             return User(timestamp, userid, flags, context, token)
-        except BaseException, e:
-            self.debug("Error: processToken: Contents of token considered invalid: %s" % e)
+        except BaseException as e:
+            self.debug(
+                "Error: processToken: Contents of token considered invalid: %s" % e
+            )
             return
 
     def getClearCookieResponse(self):
@@ -788,26 +829,28 @@ class WindowsLiveLogin: # pragma: no cover
             self.debug("Error: processConsent: Query was null.")
             return
 
-        if not 'action' in query:
+        if not "action" in query:
             self.debug("Warning: processConsent: No action in query.")
             return
 
-        action = query['action']
-        if action != 'delauth':
+        action = query["action"]
+        if action != "delauth":
             self.debug("Warning: processConsent: query action ignored: %s." % action)
             return
 
-        responsecode = query['ResponseCode']
-        if not (responsecode == 'RequestApproved'):
-            self.debug('Warning: processConsent: Consent was not successfully granted: $responsecode')
+        responsecode = query["ResponseCode"]
+        if not (responsecode == "RequestApproved"):
+            self.debug(
+                "Warning: processConsent: Consent was not successfully granted: $responsecode"
+            )
             return
 
         token = None
         context = None
 
-        if 'ConsentToken' in query:
+        if "ConsentToken" in query:
             token = query["ConsentToken"]
-        if 'appctx' in query:
+        if "appctx" in query:
             context = query["appctx"]
             context = urllib.unquote(context)
 
@@ -825,48 +868,61 @@ class WindowsLiveLogin: # pragma: no cover
         decodedtoken = token
         parsedtoken = self.parse(urllib.unquote(decodedtoken))
         if not parsedtoken:
-          self.debug("Error: processConsentToken: Failed to parse token: " + token)
-          return
+            self.debug("Error: processConsentToken: Failed to parse token: " + token)
+            return
 
-        if 'eact' in parsedtoken:
-            eact = parsedtoken['eact']
+        if "eact" in parsedtoken:
+            eact = parsedtoken["eact"]
             if eact:
                 decodedtoken = self.decodeAndValidateToken(eact)
                 if not decodedtoken:
-                    self.debug('Error: processConsentToken: Failed to decode/validate token: ' + token)
+                    self.debug(
+                        "Error: processConsentToken: Failed to decode/validate token: "
+                        + token
+                    )
                     return
 
                 parsedtoken = self.parse(decodedtoken)
                 if not parsedtoken:
-                    self.debug('Error: processConsentToken: Failed to parse token after decoding: ' + token)
+                    self.debug(
+                        "Error: processConsentToken: Failed to parse token after decoding: "
+                        + token
+                    )
                     return
 
                 decodedtoken = urllib.quote(decodedtoken)
 
         consenttoken = None
-        if 'delt' not in parsedtoken:
-            parsedtoken['delt'] = None
-        if 'reft' not in parsedtoken:
-            parsedtoken['reft'] = None
-        if 'skey' not in parsedtoken:
-            parsedtoken['skey'] = None
-        if 'exp' not in parsedtoken:
-            parsedtoken['exp'] = None
-        if 'offer' not in parsedtoken:
-            parsedtoken['offer'] = None
-        if 'lid' not in parsedtoken:
-            parsedtoken['lid'] = None
+        if "delt" not in parsedtoken:
+            parsedtoken["delt"] = None
+        if "reft" not in parsedtoken:
+            parsedtoken["reft"] = None
+        if "skey" not in parsedtoken:
+            parsedtoken["skey"] = None
+        if "exp" not in parsedtoken:
+            parsedtoken["exp"] = None
+        if "offer" not in parsedtoken:
+            parsedtoken["offer"] = None
+        if "lid" not in parsedtoken:
+            parsedtoken["lid"] = None
         try:
-            consenttoken = ConsentToken(self,
-                                              parsedtoken['delt'],
-                                              parsedtoken['reft'],
-                                              parsedtoken['skey'],
-                                              parsedtoken['exp'],
-                                              parsedtoken['offer'],
-                                              parsedtoken['lid'],
-                                              context, decodedtoken, token)
-        except BaseException, e:
-            self.debug("Error: processConsentToken: Contents of token considered invalid %s." % e)
+            consenttoken = ConsentToken(
+                self,
+                parsedtoken["delt"],
+                parsedtoken["reft"],
+                parsedtoken["skey"],
+                parsedtoken["exp"],
+                parsedtoken["offer"],
+                parsedtoken["lid"],
+                context,
+                decodedtoken,
+                token,
+            )
+        except BaseException as e:
+            self.debug(
+                "Error: processConsentToken: Contents of token considered invalid %s."
+                % e
+            )
         return consenttoken
 
     def refreshConsentToken(self, token, ru=None):
@@ -876,7 +932,7 @@ class WindowsLiveLogin: # pragma: no cover
         if not token:
             self.debug("Error: refreshConsentToken: Null consent token.")
             return
-        self.refreshConsentToken2(token.getOffersString(), token.getRefreshToken(), ru);
+        self.refreshConsentToken2(token.getOffersString(), token.getRefreshToken(), ru)
 
     def refreshConsentToken2(self, offers_string, refreshtoken, ru=None):
         """Helper function to obtain a new, refreshed token and return it.
@@ -893,13 +949,18 @@ class WindowsLiveLogin: # pragma: no cover
             if m:
                 return self.processConsentToken(m.group(1))
 
-            self.debug("Error: getAppSecurityToken: Failed to extract consent token: " +
-                       body)
-        except BaseException, e:
-            self.debug("Error: refreshConsentToken2: Failed to refresh consent token: %s" % e)
+            self.debug(
+                "Error: getAppSecurityToken: Failed to extract consent token: " + body
+            )
+        except BaseException as e:
+            self.debug(
+                "Error: refreshConsentToken2: Failed to refresh consent token: %s" % e
+            )
         return
 
-    def decodeAndValidateToken(self, token, cryptkey=None, signkey=None, internal_allow_recursion=True):
+    def decodeAndValidateToken(
+        self, token, cryptkey=None, signkey=None, internal_allow_recursion=True
+    ):
         """Decodes and validates the token."""
         if not cryptkey:
             cryptkey = self.__cryptkey
@@ -908,23 +969,25 @@ class WindowsLiveLogin: # pragma: no cover
 
         haveoldsecret = False
         oldsecretexpiry = self.getOldSecretExpiry()
-        oldcryptkey = self.__oldcryptkey;
-        oldsignkey = self.__oldsignkey;
+        oldcryptkey = self.__oldcryptkey
+        oldsignkey = self.__oldsignkey
 
         if oldsecretexpiry and (oldsecretexpiry - time.time() > 0):
-            if (oldcryptkey and oldsignkey):
-                haveoldsecret = True;
+            if oldcryptkey and oldsignkey:
+                haveoldsecret = True
 
-        haveoldsecret = (haveoldsecret and internal_allow_recursion);
+        haveoldsecret = haveoldsecret and internal_allow_recursion
 
         stoken = self.decodeToken(token, cryptkey)
-        if (stoken):
+        if stoken:
             stoken = self.validateToken(stoken, signkey)
 
         if (not stoken) and haveoldsecret:
-            self.debug("Warning: Failed to validate token with current secret, attempting with old secret.");
+            self.debug(
+                "Warning: Failed to validate token with current secret, attempting with old secret."
+            )
             stoken = self.decodeAndValidateToken(token, oldcryptkey, oldsignkey, False)
-        return stoken;
+        return stoken
 
     def decodeToken(self, token, cryptkey=None):
         """Decodes the given token string; returns undef on failure.
@@ -937,7 +1000,7 @@ class WindowsLiveLogin: # pragma: no cover
             cryptkey = self.__cryptkey
         if not cryptkey:
             self.fatal("Error: decodeToken: Secret key was not set. Aborting.")
-        token  = self.u64(token)
+        token = self.u64(token)
         if not token or (len(token) <= 16) or ((len(token) % 16) != 0):
             self.debug("Error: decodeToken: Attempted to decode invalid token.")
             return
@@ -950,7 +1013,9 @@ class WindowsLiveLogin: # pragma: no cover
                 raise WLLError("aes128cbc")
             return aes128cbc.decrypt(crypted)
         except:
-            self.debug("Error: decodeToken: Could not construct cipher object to decode token.")
+            self.debug(
+                "Error: decodeToken: Could not construct cipher object to decode token."
+            )
         return
 
     def signToken(self, token, signkey=None):
@@ -966,7 +1031,9 @@ class WindowsLiveLogin: # pragma: no cover
                 raise WLLError("hmac")
             return hmac.digest()
         except:
-            self.debug("Error: signToken: Unable to construct hash object to sign token.")
+            self.debug(
+                "Error: signToken: Unable to construct hash object to sign token."
+            )
         return
 
     def validateToken(self, token, signkey=None):
@@ -987,7 +1054,6 @@ class WindowsLiveLogin: # pragma: no cover
             self.debug("Error: validateToken: Signature is not valid.")
             return
         return token
-
 
     ###################################################################
     # Implementation of the methods needed to perform Windows Live
@@ -1050,18 +1116,19 @@ class WindowsLiveLogin: # pragma: no cover
         Therefore we must extract <value> from the string and return it as
         seen here.
         """
-        url  = self.getAppLoginUrl(siteid, ip)
+        url = self.getAppLoginUrl(siteid, ip)
         body = self.fetch(url)
         if not body:
-            self.debug("Error: getAppSecurityToken: Unable to fetch application security token.")
+            self.debug(
+                "Error: getAppSecurityToken: Unable to fetch application security token."
+            )
             return
 
         m = re.match(r'\{"token":"(.*)"\}', body)
         if m:
             return m.group(1)
 
-        self.debug("Error: getAppSecurityToken: Failed to extract token: " +
-                   body)
+        self.debug("Error: getAppSecurityToken: Failed to extract token: " + body)
         return
 
     def getAppRetCode(self):
@@ -1088,15 +1155,18 @@ class WindowsLiveLogin: # pragma: no cover
         getAppRetCode instead, sign-in will be redirected to the
         application. Otherwise, an HTTP 200 response is returned.
         """
-        token  = self.getTrustedToken(user)
+        token = self.getTrustedToken(user)
         if not token:
             return
-        token  = '<wst:RequestSecurityTokenResponse xmlns:wst="http://schemas.xmlsoap.org/ws/2005/02/trust"><wst:RequestedSecurityToken><wsse:BinarySecurityToken xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">%s</wsse:BinarySecurityToken></wst:RequestedSecurityToken><wsp:AppliesTo xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"><wsa:EndpointReference xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"><wsa:Address>uri:WindowsLiveID</wsa:Address></wsa:EndpointReference></wsp:AppliesTo></wst:RequestSecurityTokenResponse>' % token
+        token = (
+            '<wst:RequestSecurityTokenResponse xmlns:wst="http://schemas.xmlsoap.org/ws/2005/02/trust"><wst:RequestedSecurityToken><wsse:BinarySecurityToken xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">%s</wsse:BinarySecurityToken></wst:RequestedSecurityToken><wsp:AppliesTo xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"><wsa:EndpointReference xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"><wsa:Address>uri:WindowsLiveID</wsa:Address></wsa:EndpointReference></wsp:AppliesTo></wst:RequestSecurityTokenResponse>'
+            % token
+        )
         params = {}
-        params['wa'] = self.getSecurityAlgorithm()
-        params['wresult'] = token
+        params["wa"] = self.getSecurityAlgorithm()
+        params["wresult"] = token
         if retcode:
-            params['wctx'] = retcode
+            params["wctx"] = retcode
         return params
 
     def getTrustedToken(self, user):
@@ -1107,10 +1177,13 @@ class WindowsLiveLogin: # pragma: no cover
         'user'.
         """
         if not user:
-            self.debug('Error: getTrustedToken: Null user specified.')
+            self.debug("Error: getTrustedToken: Null user specified.")
             return
-        token  = "appid=%s&uid=%s&ts=%s" %\
-                 (self.getAppId(), urllib.quote(user), self.getTimestamp())
+        token = "appid=%s&uid=%s&ts=%s" % (
+            self.getAppId(),
+            urllib.quote(user),
+            self.getTimestamp(),
+        )
         token += "&sig=" + self.e64(self.signToken(token))
         return urllib.quote(token)
 
@@ -1124,7 +1197,6 @@ class WindowsLiveLogin: # pragma: no cover
         Login server."""
         return self.getSecureUrl() + "logout.srf?appid=" + self.getAppId()
 
-
     ###################################################################
     # Helper methods.
     ###################################################################
@@ -1137,16 +1209,19 @@ class WindowsLiveLogin: # pragma: no cover
 
             topnode = dom.getElementsByTagName("windowslivelogin")
             if len(topnode) < 1:
-                self.fatal("Error: parseSettings: Failed to parse settings file: " +
-                           settingsFile)
+                self.fatal(
+                    "Error: parseSettings: Failed to parse settings file: "
+                    + settingsFile
+                )
 
             for e in topnode[0].childNodes:
                 if e.nodeType == e.ELEMENT_NODE:
                     settings[e.localName] = e.firstChild.nodeValue
 
-        except BaseException, e:
-            self.fatal("Error: parseSettings: Error while reading %s: %s" %
-                       (settingsFile, e))
+        except BaseException as e:
+            self.fatal(
+                "Error: parseSettings: Error while reading %s: %s" % (settingsFile, e)
+            )
         return settings
 
     def derive(self, secret, prefix):
@@ -1177,11 +1252,11 @@ class WindowsLiveLogin: # pragma: no cover
             self.debug("Error: parse: Null input.")
             return
 
-        inpuut = inpuut.split('&')
+        inpuut = inpuut.split("&")
         pairs = {}
         for pair in inpuut:
             if pair.find("=") >= 0:
-                k, v = pair.split('=')
+                k, v = pair.split("=")
                 pairs[k] = v
         return pairs
 
@@ -1213,6 +1288,6 @@ class WindowsLiveLogin: # pragma: no cover
         try:
             f = urllib.urlopen(url)
             return f.read()
-        except BaseException, e:
+        except BaseException as e:
             self.debug("Error: fetch: %s" % e)
         return

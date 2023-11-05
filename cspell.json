@@ -4,8 +4,11 @@
     "dictionaryDefinitions": [],
     "dictionaries": [],
     "words": [
+        "fontawesome",
+        "fontawesomefree",
         "Hotmail",
-        "Millioner"
+        "Millioner",
+        "stylesheet"
     ],
     "ignoreWords": [],
     "import": []

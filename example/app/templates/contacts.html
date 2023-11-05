@@ -1,7 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Contacts</h1>
+<h1 class="text-center">Contacts</h1>
+  <div class="container text-center">
+    <div class="row gx-5">
+      <div class="col p-3">
+        <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+          <i class="fa-brands fa-google"></i>
+          &nbsp;Import from Google
+        </button>
+      </div>
+      <div class="col p-3">
+        <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+          <i class="fa-brands fa-windows"></i>
+          &nbsp;Import from Outlook
+        </button>
+      </div>
+      <div class="col p-3">
+        <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+          <i class="fa-brands fa-yahoo"></i>
+          &nbsp;Import from Yahoo
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="col-lg-8 px-0">
     <ul>
         {% for contact in contacts %}
