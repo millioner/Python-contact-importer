@@ -3,6 +3,7 @@ import logging
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
+from googleapiclient.discovery import build
 
 from .oauth import OAuthContacts
 
@@ -100,22 +101,50 @@ class GmailContacts(OAuthContacts):
         }
         logger.info("credentials: %s", credentials)
         # TODO: import contacts finally!!!
-        # service = build("people", "v1", credentials=creds)
+        service = build("people", "v1", credentials=flow.credentials)
         # people = people_service.people().connections()
         #     .list('people/me', personFields='names,emailAddresses')
 
         # or
 
-        # results = (
-        #     service.people()
-        #     .connections()
-        #     .list(
-        #         resourceName="people/me",
-        #         pageSize=10,
-        #         personFields="names,emailAddresses",
-        #     )
-        #     .execute()
-        # )
+        results = (
+            service.people()
+            .connections()
+            .list(
+                resourceName="people/me",
+                pageSize=10,
+                personFields="names,emailAddresses",
+            )
+            .execute()
+        )
+
+        # https://developers.google.com/people/v1/contacts#python
+        # results:
+        # {
+        #     "connections": [
+        #         {
+        #             "resourceName": "people/c6680821169607354857",
+        #             "etag": "%EgcBAgkuNz0+GgQBAgUHIgwybGErTjQxVFAwdz0=",
+        #             "names": [
+        #                 {
+        #                     "metadata": {
+        #                         "primary": True,
+        #                         "source": {"type": "CONTACT", "id": "5cb70b750e5b29e9"},
+        #                     },
+        #                     "displayName": "Грек",
+        #                     "givenName": "Грек",
+        #                     "displayNameLastFirst": "Грек",
+        #                     "unstructuredName": "Грек",
+        #                 }
+        #             ],
+        #         }
+        #     ],
+        #     "nextPageToken": "GgYKAggKEAI",
+        #     "totalPeople": 698,
+        #     "totalItems": 698,
+        # }
+
+        # import pdb; pdb.set_trace()
         # connections = results.get("connections", [])
 
         return []

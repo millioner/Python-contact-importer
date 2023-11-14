@@ -20,6 +20,11 @@ providers = {
     "google": GmailContacts,
     # "yahoo": YahooContacts,
     # "hotmail": HotmailContacts,
+    # facebook ?
+    # telegram ?
+    # linkedin ?
+    # twitter ?
+    # instagram ?
 }
 
 PROVIDER_CREDENTIALS = settings.CONTACT_IMPORT_SETTINGS
@@ -33,7 +38,9 @@ def import_contacts(view):
         service_name = request.GET.get("service") or request.session.get(
             "contact_import_service"
         )
+        logger.debug("Service name: %s", service_name)
         if not service_name:
+            logger.debug("No service name, returning view")
             return view(request, contact_provider=None, **kwargs)
 
         if service_name not in providers:
