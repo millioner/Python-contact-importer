@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-os#+vt^9(l5gbrp1es0$_-xko%clvo*w541o@q7%(2=7e)n+f0"
+SECRET_KEY = "django-insecure-os#+vt^9(l5gbrp1es0$_-xko%clvo*w541o@q7%(2=7e)n+f0"  # cspell: disable-line
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -125,13 +125,50 @@ STATICFILES_DIRS = [
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s %(levelname)s %(process)d "
+            "[%(name)s] %(filename)s:%(lineno)d - %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+        },
+        # 'stdout': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.StreamHandler',
+        #     'formatter': 'verbose',
+        #     'stream': sys.stdout,
+        # },
+    },
+    "loggers": {
+        "django": {
+            "level": "INFO",
+            "handlers": ["console"],
+            "propagate": True,
+        },
+        "contact_importer": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": True,
+        },
+    },
+}
+
 
 CONTACT_IMPORT_SETTINGS = {
     "google": {
         "consumer_key": "example.com",
         "consumer_secret": "bYG3xo_b-4cP7Yre1leF9Qsn",
+        "client_secret_file": BASE_DIR / "secrets" / "client_secret.json",
     },
     "yahoo": {
         "consumer_key": "dj0yJmk9ekN2dKHGgyZNjZWJmQ9WVdrOe9Fb3hhbTFXTkdrbWNHbzlNVGd5TXpNMU5ESTJNLJNKJDnsjdktXxpxNyZXQmeD1mZA--",

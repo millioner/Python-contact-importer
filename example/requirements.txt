@@ -14,3 +14,6 @@ shellescape==3.8.1
 sqlparse==0.4.4
 typing_extensions==4.7.1
 urllib3==2.0.4
+google-api-python-client==2.107.0
+google-auth-httplib2==0.1.1
+google-auth-oauthlib==1.1.0

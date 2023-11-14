@@ -19,7 +19,7 @@ class OAuthContacts(BaseContacts):
 
     scope_urls = []
 
-    def __init__(self, consumer_key, consumer_secret, *args, **kwargs):
+    def __init__(self, credentials, redirect_url, *args, **kwargs):
         """
         Init function
         Keyword params:
@@ -31,10 +31,8 @@ class OAuthContacts(BaseContacts):
             - **oauth_verifier** -- GET param that is passed to the server
                                     when user is redirected back from the content provider
         """
-        self.consumer_key = consumer_key
-        self.consumer_secret = consumer_secret
-        self.consumer = oauth.Consumer(consumer_key, consumer_secret)
-
+        self.credentials = credentials
+        self.redirect_url = redirect_url
         super(OAuthContacts, self).__init__(*args, **kwargs)
 
     def get_params(self, oauth_callback):

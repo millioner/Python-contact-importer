@@ -16,7 +16,7 @@ class BaseContacts(object):
         """
         raise NotImplementedError()
 
-    def get_contact_list(self):
+    def get_contact_list(self):  # TODO: do we need this?
         """
         Returns a contact list
         """

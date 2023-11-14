@@ -1,0 +1,6 @@
+contact_importer
+secrets
+var
+static
+db.sqlite3
+.venv

@@ -1,25 +1,31 @@
 from typing import Any
-
+from django import http
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
 
-from contact_importer.decorators import get_contacts
+# from django.contrib.auth.decorators import login_required
+
+from contact_importer.decorators import import_contacts
 
 
-@method_decorator(
-    [
-        # csrf_exempt,
-        # login_required,
-        # get_contacts,
-    ],
-    name="dispatch",
-)
 class ContactsView(TemplateView):
     template_name = "contacts.html"
 
-    def post(self, request, *args, **kwargs):
+    @method_decorator(
+        [
+            csrf_exempt,
+            # login_required,
+            import_contacts,
+        ],
+        name="dispatch",
+    )
+    def dispatch(
+        self, request: http.HttpRequest, *args: Any, **kwargs: Any
+    ) -> http.HttpResponse:
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request: http.HttpRequest, *args, **kwargs) -> http.HttpResponse:
         return self.get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
